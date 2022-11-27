@@ -68,12 +68,18 @@ document.addEventListener("alpine:init", function () {
         });
       },
       onKeyPress: function onKeyPress(key) {
-        this.board[this.currentRowIndex][this.currentTileIndex] = key;
-        if (this.currentTileIndex == this.wordLength - 1) {
-          this.currentRowIndex++;
-          this.currentTileIndex = 0;
-        } else {
-          this.currentTileIndex++;
+        // Validation
+        // The test() method returns true if it finds a match, otherwise false.
+        // We test if the key that is pressed is a letter from start (^) A to ($) end z.
+        // Examples https://learn.microsoft.com/en-us/dotnet/standard/base-types/anchors-in-regular-expressions?redirectedfrom=MSDN
+        if (/^[A-z]$/.test(key)) {
+          this.board[this.currentRowIndex][this.currentTileIndex] = key;
+          if (this.currentTileIndex == this.wordLength - 1) {
+            this.currentRowIndex++;
+            this.currentTileIndex = 0;
+          } else {
+            this.currentTileIndex++;
+          }
         }
       }
     };

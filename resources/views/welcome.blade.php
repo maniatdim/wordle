@@ -7,15 +7,17 @@
     <title>TryCat</title>
     <link rel="stylesheet" href="/css/app.css">
     <script src="//unpkg.com/alpinejs" defer></script>
-    <!-- <script src="/js/app.js" defer></script> -->
+    <script src="/js/app.js"></script>
 </head>
 
 <body>
-    <div id="game" x-data="({ guessesAllowed: 3, wordLength: 4 })">
-        <template x-for="row in Array.from({ length: guessesAllowed })">
+
+    <div id="game" x-data="game" @keyup.window="onKeyPress($event.key)">
+        <template x-for="row in board">
             <div class="row">
-                <template x-for="tile in Array.from({ length: wordLength })">
-                    <div class="tile"></div>
+
+                <template x-for="tile in row">
+                    <div class="tile" x-text="tile"></div>
                 </template>
             </div>
         </template>

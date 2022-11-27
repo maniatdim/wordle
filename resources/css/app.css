@@ -14,7 +14,11 @@ body {
 #game {
     display: grid;
     place-items: center;
-    grid-template-columns: repeat(3, 1fr);
+    /* grid-template-columns: repeat(3, 1fr); */
+}
+
+.row {
+    display: flex;
 }
 
 .tile {

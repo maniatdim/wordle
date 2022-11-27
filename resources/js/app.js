@@ -56,15 +56,17 @@ document.addEventListener("alpine:init", () => {
                 // The test() method returns true if it finds a match, otherwise false.
                 // We test if the key that is pressed is a letter from start (^) A to ($) end z.
                 if (/^[A-z]$/.test(key)) {
-                    this.board[this.currentRowIndex][this.currentTileIndex] =
-                        key;
+                    this.fillTileBox(key);
+                }
+            },
+            fillTileBox(key) {
+                this.board[this.currentRowIndex][this.currentTileIndex] = key;
 
-                    if (this.currentTileIndex == this.wordLength - 1) {
-                        this.currentRowIndex++;
-                        this.currentTileIndex = 0;
-                    } else {
-                        this.currentTileIndex++;
-                    }
+                if (this.currentTileIndex == this.wordLength - 1) {
+                    this.currentRowIndex++;
+                    this.currentTileIndex = 0;
+                } else {
+                    this.currentTileIndex++;
                 }
             },
         };

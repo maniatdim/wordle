@@ -51,7 +51,7 @@
 document.addEventListener("alpine:init", function () {
   Alpine.data("game", function () {
     return {
-      guessesAllowed: 4,
+      guessesAllowed: 3,
       wordLength: 3,
       currentRowIndex: 0,
       currentTileIndex: 0,
@@ -69,7 +69,12 @@ document.addEventListener("alpine:init", function () {
       },
       onKeyPress: function onKeyPress(key) {
         this.board[this.currentRowIndex][this.currentTileIndex] = key;
-        this.currentTileIndex++;
+        if (this.currentTileIndex == this.wordLength - 1) {
+          this.currentRowIndex++;
+          this.currentTileIndex = 0;
+        } else {
+          this.currentTileIndex++;
+        }
       }
     };
   });

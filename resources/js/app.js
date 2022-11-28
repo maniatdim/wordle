@@ -1,44 +1,15 @@
-// require("./bootstrap");
+class Tile {
+    letter = ""; // Letter the user pressed
+    status = ""; // Correct, present, absent
 
-// //defer. This Boolean attribute is set to indicate to a browser that the script is meant to be executed after the document has been parsed, but before firing DOMContentLoaded. <script src="/css/app.js" defer></script>
-
-// let grid = document.querySelector("#game");
-
-// // The number of guesses (3)
-// // The length of the word (3)
-
-// // Genarate 3 rows
-
-// // Create a DOM structure outside of the webpage and only when it is ready insert it into the DOM (createDocumentFragment)
-// let fragment = document.createDocumentFragment();
-
-// // Create 3 divs
-// Array.from({ length: 3 }).forEach((item) => {
-//     let row = document.createElement("div");
-
-//     // Create a class named row
-//     row.classList.add("row");
-
-//     Array.from({ length: 3 }).forEach((item) => {
-//         // Create 3 divs
-//         let tile = document.createElement("div");
-//         // Create a class tile
-//         tile.classList.add("tile");
-//         // Add the 3 divs with class name tiles inside the 3 divs with class name row
-//         row.appendChild(tile);
-//     });
-
-//     // Add the class row to the 3 divs
-//     fragment.appendChild(row);
-// });
-
-// // Add the fragment to the #game
-// grid.appendChild(fragment);
-
-// document.addEventListener("keyup", (event) => {
-//     alert(event.key);
-// });
-
+    lowerCaseLetter(key) {
+        this.letter = key.toLowerCase(); // Set the input letter to lowecase.
+        //We can do this also with css text-transform: lowercase;
+    }
+    empty() {
+        this.letter = "";
+    }
+}
 document.addEventListener("alpine:init", () => {
     Alpine.data("game", () => {
         return {
@@ -48,7 +19,10 @@ document.addEventListener("alpine:init", () => {
             currentTileIndex: 0,
             init() {
                 this.board = Array.from({ length: this.guessesAllowed }, () => {
-                    return Array.from({ length: this.wordLength }, () => "");
+                    return Array.from(
+                        { length: this.wordLength },
+                        () => new Tile() // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
+                    );
                 });
             },
             onKeyPress(key) {
@@ -57,17 +31,30 @@ document.addEventListener("alpine:init", () => {
                 // We test if the key that is pressed is a letter from start (^) A to ($) end z.
                 if (/^[A-z]$/.test(key)) {
                     this.fillTileBox(key);
+                } else if (key == "Enter") {
+                    this.submitGuess();
                 }
             },
-            fillTileBox(key) {
-                this.board[this.currentRowIndex][this.currentTileIndex] = key;
 
+            fillTileBox(key) {
+                // this.board[this.currentRowIndex][this.currentTileIndex] = key;
+                // this.currentRow().forEach((tile) => {
+                for (let tile of this.currentRow()) {
+                    if (tile.letter == "") {
+                        tile.lowerCaseLetter(key); //The key that was pressed was the letter that was pressed.
+                        break;
+                    }
+                }
+                // });
                 if (this.currentTileIndex == this.wordLength - 1) {
                     this.currentRowIndex++;
                     this.currentTileIndex = 0;
                 } else {
                     this.currentTileIndex++;
                 }
+            },
+            currentRow() {
+                return this.board[this.currentRowIndex];
             },
         };
     });

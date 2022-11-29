@@ -1,15 +1,110 @@
 /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
   \*****************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./resources/js/game.js");
+
+document.addEventListener("alpine:init", function () {
+  Alpine.data("game", function () {
+    return _game__WEBPACK_IMPORTED_MODULE_0__["default"];
+  });
+});
+
+/***/ }),
+
+/***/ "./resources/js/game.js":
+/*!******************************!*\
+  !*** ./resources/js/game.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _tile__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tile */ "./resources/js/tile.js");
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  guessesAllowed: 3,
+  wordLength: 3,
+  currentRowIndex: 0,
+  currentTileIndex: 0,
+  init: function init() {
+    var _this = this;
+    this.board = Array.from({
+      length: this.guessesAllowed
+    }, function () {
+      return Array.from({
+        length: _this.wordLength
+      }, function () {
+        return new _tile__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      } // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
+      );
+    });
+  },
+  onKeyPress: function onKeyPress(key) {
+    // Validation
+    // The test() method returns true if it finds a match, otherwise false.
+    // We test if the key that is pressed is a letter from start (^) A to ($) end z.
+    if (/^[A-z]$/.test(key)) {
+      this.fillTileBox(key);
+    } else if (key == "Enter") {
+      this.submitGuess();
+    }
+  },
+  fillTileBox: function fillTileBox(key) {
+    // this.board[this.currentRowIndex][this.currentTileIndex] = key;
+    // this.currentRow().forEach((tile) => {
+    var _iterator = _createForOfIteratorHelper(this.currentRow()),
+      _step;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var tile = _step.value;
+        if (tile.letter == "") {
+          tile.lowerCaseLetter(key); //The key that was pressed was the letter that was pressed.
+          break;
+        }
+      }
+      // });
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+    if (this.currentTileIndex == this.wordLength - 1) {
+      this.currentRowIndex++;
+      this.currentTileIndex = 0;
+    } else {
+      this.currentTileIndex++;
+    }
+  },
+  currentRow: function currentRow() {
+    return this.board[this.currentRowIndex];
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/tile.js":
+/*!******************************!*\
+  !*** ./resources/js/tile.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Tile)
+/* harmony export */ });
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
@@ -29,71 +124,15 @@ var Tile = /*#__PURE__*/function () {
       this.letter = key.toLowerCase(); // Set the input letter to lowecase.
       //We can do this also with css text-transform: lowercase;
     }
+  }, {
+    key: "empty",
+    value: function empty() {
+      this.letter = "";
+    }
   }]);
   return Tile;
 }();
-document.addEventListener("alpine:init", function () {
-  Alpine.data("game", function () {
-    return {
-      guessesAllowed: 3,
-      wordLength: 3,
-      currentRowIndex: 0,
-      currentTileIndex: 0,
-      init: function init() {
-        var _this = this;
-        this.board = Array.from({
-          length: this.guessesAllowed
-        }, function () {
-          return Array.from({
-            length: _this.wordLength
-          }, function () {
-            return new Tile();
-          } // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
-          );
-        });
-      },
-      onKeyPress: function onKeyPress(key) {
-        // Validation
-        // The test() method returns true if it finds a match, otherwise false.
-        // We test if the key that is pressed is a letter from start (^) A to ($) end z.
-        if (/^[A-z]$/.test(key)) {
-          this.fillTileBox(key);
-        } else if (key == "Enter") {
-          this.submitGuess();
-        }
-      },
-      fillTileBox: function fillTileBox(key) {
-        // this.board[this.currentRowIndex][this.currentTileIndex] = key;
-        // this.currentRow().forEach((tile) => {
-        var _iterator = _createForOfIteratorHelper(this.currentRow()),
-          _step;
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var tile = _step.value;
-            if (tile.letter == "") {
-              tile.lowerCaseLetter(key); //The key that was pressed was the letter that was pressed.
-              break;
-            }
-          }
-          // });
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-        if (this.currentTileIndex == this.wordLength - 1) {
-          this.currentRowIndex++;
-          this.currentTileIndex = 0;
-        } else {
-          this.currentTileIndex++;
-        }
-      },
-      currentRow: function currentRow() {
-        return this.board[this.currentRowIndex];
-      }
-    };
-  });
-});
+
 
 /***/ }),
 
@@ -103,7 +142,6 @@ document.addEventListener("alpine:init", function () {
   \*******************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-"use strict";
 __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
@@ -169,6 +207,18 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 				}
 /******/ 			}
 /******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
 /******/ 		};
 /******/ 	})();
 /******/ 	

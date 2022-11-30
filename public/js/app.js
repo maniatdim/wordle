@@ -96,6 +96,28 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     if (guess.length < this.word.length) {
       return;
     }
+    // Update the current color
+    var _iterator2 = _createForOfIteratorHelper(this.currentRow),
+      _step2;
+    try {
+      for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+        var tile = _step2.value;
+        if (this.word.includes(tile.letter)) {
+          tile.status = "present";
+        }
+        if (!this.word.includes(tile.letter)) {
+          tile.status = "absent";
+        }
+        if (guess == this.word) {
+          tile.status = "correct";
+        }
+      }
+      // If the word the user pressed is equal to word: "dog"
+    } catch (err) {
+      _iterator2.e(err);
+    } finally {
+      _iterator2.f();
+    }
     if (guess == this.word) {
       this.message = "You Win!";
     } else if (this.guessesAllowed == this.currentRowIndex + 1) {
@@ -103,7 +125,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       location.reload(); //Reload the page to start the game again
     } else {
       this.message = "Wrong answer!";
-      this.currentRowIndex++;
+      this.currentRowIndex++; //Go to the next row
     }
   }
 });

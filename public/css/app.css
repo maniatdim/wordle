@@ -39,3 +39,16 @@ body {
     font-size: 1.6rem;
 }
 
+.tile.absent {
+    background: #ccc;
+}
+
+.tile.present {
+    background: yellow;
+    color: black;
+}
+
+.tile.correct {
+    background: green;
+}
+

@@ -17,7 +17,7 @@
                 <div class="row">
 
                     <template x-for="tile in row">
-                        <div class="tile" x-text="tile.letter"></div>
+                        <div class="tile" :class="tile.status" x-text="tile.letter"></div>
                     </template>
                 </div>
             </template>

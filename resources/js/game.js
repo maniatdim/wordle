@@ -53,6 +53,19 @@ export default {
         if (guess.length < this.word.length) {
             return;
         }
+        // Update the current color
+        for (let tile of this.currentRow) {
+            if (this.word.includes(tile.letter)) {
+                tile.status = "present";
+            }
+            if (!this.word.includes(tile.letter)) {
+                tile.status = "absent";
+            }
+            if (guess == this.word) {
+                tile.status = "correct";
+            }
+        }
+        // If the word the user pressed is equal to word: "dog"
         if (guess == this.word) {
             this.message = "You Win!";
         } else if (this.guessesAllowed == this.currentRowIndex + 1) {
@@ -60,7 +73,7 @@ export default {
             location.reload(); //Reload the page to start the game again
         } else {
             this.message = "Wrong answer!";
-            this.currentRowIndex++;
+            this.currentRowIndex++; //Go to the next row
         }
     },
 };

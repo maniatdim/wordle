@@ -31,3 +31,11 @@ body {
     font-size: 2rem;
 }
 
+.message {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    font-size: 1.6rem;
+}
+

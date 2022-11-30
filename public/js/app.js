@@ -36,60 +36,75 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   guessesAllowed: 3,
-  wordLength: 3,
+  word: "dog",
   currentRowIndex: 0,
-  currentTileIndex: 0,
+  message: "",
+  get currentGuess() {
+    return this.currentRow.map(function (tile) {
+      return tile.letter;
+    }).join(""); //We map over the current row and use join to remove the (,) from the array
+  },
+  // Create the board dynamically.
   init: function init() {
     var _this = this;
     this.board = Array.from({
       length: this.guessesAllowed
     }, function () {
       return Array.from({
-        length: _this.wordLength
+        length: _this.word.length
       }, function () {
         return new _tile__WEBPACK_IMPORTED_MODULE_0__["default"]();
       } // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
       );
     });
   },
+  // When the users presses a key or the enter key do something:
   onKeyPress: function onKeyPress(key) {
+    this.message = ""; // On KeyPress we clear the message
     // Validation
     // The test() method returns true if it finds a match, otherwise false.
     // We test if the key that is pressed is a letter from start (^) A to ($) end z.
     if (/^[A-z]$/.test(key)) {
       this.fillTileBox(key);
     } else if (key == "Enter") {
+      // When the users presses enter  run the submitGuess function
       this.submitGuess();
     }
   },
   fillTileBox: function fillTileBox(key) {
-    // this.board[this.currentRowIndex][this.currentTileIndex] = key;
-    // this.currentRow().forEach((tile) => {
-    var _iterator = _createForOfIteratorHelper(this.currentRow()),
+    var _iterator = _createForOfIteratorHelper(this.currentRow),
       _step;
     try {
       for (_iterator.s(); !(_step = _iterator.n()).done;) {
         var tile = _step.value;
-        if (tile.letter == "") {
+        if (!tile.letter) {
           tile.lowerCaseLetter(key); //The key that was pressed was the letter that was pressed.
           break;
         }
       }
-      // });
     } catch (err) {
       _iterator.e(err);
     } finally {
       _iterator.f();
     }
-    if (this.currentTileIndex == this.wordLength - 1) {
-      this.currentRowIndex++;
-      this.currentTileIndex = 0;
-    } else {
-      this.currentTileIndex++;
-    }
   },
-  currentRow: function currentRow() {
+  get currentRow() {
     return this.board[this.currentRowIndex];
+  },
+  submitGuess: function submitGuess() {
+    var guess = this.currentGuess;
+    if (guess.length < this.word.length) {
+      return;
+    }
+    if (guess == this.word) {
+      this.message = "You Win!";
+    } else if (this.guessesAllowed == this.currentRowIndex + 1) {
+      this.message = "Game Over!";
+      location.reload(); //Reload the page to start the game again
+    } else {
+      this.message = "Wrong answer!";
+      this.currentRowIndex++;
+    }
   }
 });
 

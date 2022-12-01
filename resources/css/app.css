@@ -6,10 +6,10 @@ body {
 body {
     display: grid;
     place-items: center;
-    background-color: #0e1626;
+    background-color: #0e1626 !important;
     color: #ffffff;
     margin: 0;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif !important;
 }
 
 #game {
@@ -78,9 +78,19 @@ body {
     text-shadow: 0 0 12px rgba(38, 246, 110, 0.42);
 }
 
+.row.invalid .tile,
+.tile.invalid {
+    color: #ff3f3f;
+    text-shadow: 0 0 12px rgba(38, 246, 110, 0.42);
+}
+
 img {
     width: 140px;
     padding: 20px 0px;
     margin: 0 auto;
     display: block;
+}
+
+.btn .badge {
+    top: -20px;
 }

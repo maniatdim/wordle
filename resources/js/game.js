@@ -28,6 +28,9 @@ export default {
         // We test if the key that is pressed is a letter from start (^) A to ($) end z.
         if (/^[A-z]$/.test(key)) {
             this.fillTileBox(key);
+        } else if (key == "Backspace") {
+            // When the users presses Backspace
+            this.emptyTileBox();
         } else if (key == "Enter") {
             // When the users presses enter  run the submitGuess function
             this.submitGuess();
@@ -37,7 +40,17 @@ export default {
     fillTileBox(key) {
         for (let tile of this.currentRow) {
             if (!tile.letter) {
-                tile.lowerCaseLetter(key); //The key that was pressed was the letter that was pressed.
+                tile.fill(key); //The key that was pressed was the letter that was pressed.
+                break;
+            }
+        }
+    },
+
+    emptyTileBox() {
+        // Adding the currentRow into an array [...] and then reversing it.
+        for (let tile of [...this.currentRow].reverse()) {
+            if (tile.letter) {
+                tile.empty();
                 break;
             }
         }
@@ -53,7 +66,6 @@ export default {
         if (guess.length < this.word.length) {
             return;
         }
-        // Update the current color
         for (let tile of this.currentRow) {
             if (this.word.includes(tile.letter)) {
                 tile.status = "present";

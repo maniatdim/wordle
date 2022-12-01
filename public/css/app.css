@@ -6,19 +6,44 @@ body {
 body {
     display: grid;
     place-items: center;
-    background-color: rgb(13, 13, 13);
+    background-color: #0e1626;
     color: #ffffff;
-    font-family: sans-serif;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
 }
 
 #game {
-    display: grid;
-    place-items: center;
-    /* grid-template-columns: repeat(3, 1fr); */
+    color: #ffffff;
+    background-image: linear-gradient(153deg, #1c2b45 13%, #0c1321 85%),
+        linear-gradient(149deg, #fec63b 3%, rgba(254, 198, 59, 0) 80%);
+    position: relative;
+    border-radius: 20px;
+}
+
+#game:before {
+    content: '';
+    display: block;
+    position: absolute;
+    inset: -7px;
+    background-image: linear-gradient(138deg, #6ba0e2 -20%, #131e32 105%);
+    z-index: -1;
+    border-radius: 20px;
 }
 
 .row {
     display: flex;
+}
+
+.row.current .tile:empty:first-of-type {
+    animation: fade 2s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+}
+
+@keyframes fade {
+    50% {
+        background: rgba(73, 110, 158, 0.1);
+    }
 }
 
 .tile {
@@ -27,28 +52,36 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    outline: 1px solid #ffffff;
-    font-size: 2rem;
+    font-size: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    outline: 1px solid rgba(73, 110, 158, 0.1);
+    color: #496e9e;
 }
 
 .message {
     position: fixed;
-    bottom: 0;
-    right: 0;
-    padding: 10px;
-    font-size: 1.6rem;
-}
-
-.tile.absent {
-    background: #ccc;
+    text-align: center;
+    display: block;
+    font-size: 20px;
+    margin-top: 1rem;
+    inset: auto 0 3rem 0;
 }
 
 .tile.present {
-    background: yellow;
-    color: black;
+    color: #f7f749;
+    text-shadow: 0 0 12px rgba(246, 171, 38, 0.42);
 }
 
 .tile.correct {
-    background: green;
+    color: #47d747;
+    text-shadow: 0 0 12px rgba(38, 246, 110, 0.42);
+}
+
+img {
+    width: 140px;
+    padding: 20px 0px;
+    margin: 0 auto;
+    display: block;
 }
 

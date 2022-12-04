@@ -7,23 +7,46 @@ export default {
     currentRowIndex: 0,
     state: "active",
     message: "",
+    errors: false,
 
-    // 0) get currentGuess
+    letters: [
+        "QWERTYUIOP".split(""),
+        "ASDFGHJKL".split(""),
+        ["Enter", ..."ZXCVBNM".split(""), "Backspace"],
+    ],
+
+    // 1) get currentRow
+    get currentRow() {
+        return this.board[this.currentRowIndex];
+    },
+
+    // 2) get currentGuess
     get currentGuess() {
         return this.currentRow.map((tile) => tile.letter).join(""); //We map over the current row and use join to remove the (,) from the array
     },
 
-    // 1) Create the board dynamically.
+    get remainingGuesses() {
+        return this.guessesAllowed - this.currentRowIndex - 1;
+    },
+
+    // 3) Create the board dynamically.
     init() {
         this.board = Array.from({ length: this.guessesAllowed }, () => {
             return Array.from(
                 { length: this.word.length },
-                () => new Tile() // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
+                (item, index) => new Tile(index) // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
             );
         });
     },
 
-    // 2) onKeyPress
+    matchingTileKey(key) {
+        return this.board
+            .flat()
+            .filter((tile) => tile.status)
+            .sort((t1, t2) => t2.status == "correct")
+            .find((tile) => tile.letter == key.toLowerCase());
+    },
+    // 4) onKeyPress
 
     // When the users presses a key or the enter key do something:
     onKeyPress(key) {
@@ -43,7 +66,7 @@ export default {
         }
     },
 
-    // 3) fillTileBox
+    // 5) fillTileBox
     fillTileBox(key) {
         for (let tile of this.currentRow) {
             if (!tile.letter) {
@@ -53,7 +76,7 @@ export default {
         }
     },
 
-    // 4) emptyTileBox
+    // 6) emptyTileBox
     emptyTileBox() {
         // Adding the currentRow into an array [...] and then reversing it.
         for (let tile of [...this.currentRow].reverse()) {
@@ -64,42 +87,35 @@ export default {
         }
     },
 
-    // 5) get currentRow
-    get currentRow() {
-        return this.board[this.currentRowIndex];
-    },
-
-    // 6) submitGuess
+    // 7) submitGuess
     submitGuess() {
-        let guess = this.currentGuess.toUpperCase();
-
-        if (guess.length < this.word.length) {
+        if (this.currentGuess.length < this.word.length) {
             return;
         }
-        if (!words.includes(this.guess)) {
+
+        const mapWords = words.map((element) => {
+            return element.toUpperCase();
+        });
+
+        if (!mapWords.includes(this.currentGuess)) {
             this.errors = true;
-            this.message = "Invalid word";
+            this.currentRowIndex++;
+            return (this.message = "Invalid word...");
         }
-        for (let tile of this.currentRow) {
-            if (this.word.includes(tile.letter)) {
-                tile.status = "present";
-            }
-            if (!this.word.includes(tile.letter)) {
-                tile.status = "absent";
-            }
-            if (guess == this.word) {
-                tile.status = "correct";
-            }
+
+        Tile.updateStatusesForRow(this.currentRow, this.word);
+
+        if (this.currentGuess == this.word) {
+            this.state = "complete";
+
+            return (this.message = "You Win!");
         }
-        //If the word the user pressed is equal to word: "dog"
-        if (guess == this.word) {
-            this.message = "You Win!";
-        } else if (this.guessesAllowed == this.currentRowIndex + 1) {
-            this.message = "Game Over!";
-            location.reload(); //Reload the page to start the game again
-        } else {
-            this.message = "Wrong answer!";
-            this.currentRowIndex++; //Go to the next row
+
+        if (this.remainingGuesses == 0) {
+            this.state = "complete";
+
+            return (this.message = "Game Over. You Lose.");
         }
+        this.currentRowIndex++;
     },
 };

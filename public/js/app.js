@@ -10,16 +10,14 @@
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game */ "./resources/js/game.js");
-/* harmony import */ var _mywords__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./mywords */ "./resources/js/mywords.js");
 
+//import mywords from "./mywords";
 
 document.addEventListener("alpine:init", function () {
   Alpine.data("game", function () {
     return _game__WEBPACK_IMPORTED_MODULE_0__["default"];
   });
-  Alpine.data("mywords", function () {
-    return _mywords__WEBPACK_IMPORTED_MODULE_1__["default"];
-  });
+  //Alpine.data("mywords", () => mywords);
 });
 
 /***/ }),
@@ -36,12 +34,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _tile__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./tile */ "./resources/js/tile.js");
 /* harmony import */ var _words__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./words */ "./resources/js/words.js");
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 
@@ -51,13 +49,23 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
   currentRowIndex: 0,
   state: "active",
   message: "",
-  // 0) get currentGuess
+  errors: false,
+  letters: ["QWERTYUIOP".split(""), "ASDFGHJKL".split(""), ["Enter"].concat(_toConsumableArray("ZXCVBNM".split("")), ["Backspace"])],
+  // 1) get currentRow
+  get currentRow() {
+    return this.board[this.currentRowIndex];
+  },
+  // 2) get currentGuess
   get currentGuess() {
     return this.currentRow.map(function (tile) {
       return tile.letter;
     }).join(""); //We map over the current row and use join to remove the (,) from the array
   },
-  // 1) Create the board dynamically.
+
+  get remainingGuesses() {
+    return this.guessesAllowed - this.currentRowIndex - 1;
+  },
+  // 3) Create the board dynamically.
   init: function init() {
     var _this = this;
     this.board = Array.from({
@@ -65,13 +73,22 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     }, function () {
       return Array.from({
         length: _this.word.length
-      }, function () {
-        return new _tile__WEBPACK_IMPORTED_MODULE_0__["default"]();
+      }, function (item, index) {
+        return new _tile__WEBPACK_IMPORTED_MODULE_0__["default"](index);
       } // Create a new class with name "tile" and store the key that the user pressed into the class name tile.
       );
     });
   },
-  // 2) onKeyPress
+  matchingTileKey: function matchingTileKey(key) {
+    return this.board.flat().filter(function (tile) {
+      return tile.status;
+    }).sort(function (t1, t2) {
+      return t2.status == "correct";
+    }).find(function (tile) {
+      return tile.letter == key.toLowerCase();
+    });
+  },
+  // 4) onKeyPress
   // When the users presses a key or the enter key do something:
   onKeyPress: function onKeyPress(key) {
     this.message = ""; // On KeyPress we clear the message
@@ -89,7 +106,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.submitGuess();
     }
   },
-  // 3) fillTileBox
+  // 5) fillTileBox
   fillTileBox: function fillTileBox(key) {
     var _iterator = _createForOfIteratorHelper(this.currentRow),
       _step;
@@ -107,7 +124,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       _iterator.f();
     }
   },
-  // 4) emptyTileBox
+  // 6) emptyTileBox
   emptyTileBox: function emptyTileBox() {
     // Adding the currentRow into an array [...] and then reversing it.
     var _iterator2 = _createForOfIteratorHelper(_toConsumableArray(this.currentRow).reverse()),
@@ -126,75 +143,29 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       _iterator2.f();
     }
   },
-  // 5) get currentRow
-  get currentRow() {
-    return this.board[this.currentRowIndex];
-  },
-  // 6) submitGuess
+  // 7) submitGuess
   submitGuess: function submitGuess() {
-    var guess = this.currentGuess.toUpperCase();
-    if (guess.length < this.word.length) {
+    if (this.currentGuess.length < this.word.length) {
       return;
     }
-    if (!_words__WEBPACK_IMPORTED_MODULE_1__["default"].includes(this.guess)) {
+    var mapWords = _words__WEBPACK_IMPORTED_MODULE_1__["default"].map(function (element) {
+      return element.toUpperCase();
+    });
+    if (!mapWords.includes(this.currentGuess)) {
       this.errors = true;
-      this.message = "Invalid word";
+      this.currentRowIndex++;
+      return this.message = "Invalid word...";
     }
-    var _iterator3 = _createForOfIteratorHelper(this.currentRow),
-      _step3;
-    try {
-      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-        var tile = _step3.value;
-        if (this.word.includes(tile.letter)) {
-          tile.status = "present";
-        }
-        if (!this.word.includes(tile.letter)) {
-          tile.status = "absent";
-        }
-        if (guess == this.word) {
-          tile.status = "correct";
-        }
-      }
-      //If the word the user pressed is equal to word: "dog"
-    } catch (err) {
-      _iterator3.e(err);
-    } finally {
-      _iterator3.f();
+    _tile__WEBPACK_IMPORTED_MODULE_0__["default"].updateStatusesForRow(this.currentRow, this.word);
+    if (this.currentGuess == this.word) {
+      this.state = "complete";
+      return this.message = "You Win!";
     }
-    if (guess == this.word) {
-      this.message = "You Win!";
-    } else if (this.guessesAllowed == this.currentRowIndex + 1) {
-      this.message = "Game Over!";
-      location.reload(); //Reload the page to start the game again
-    } else {
-      this.message = "Wrong answer!";
-      this.currentRowIndex++; //Go to the next row
+    if (this.remainingGuesses == 0) {
+      this.state = "complete";
+      return this.message = "Game Over. You Lose.";
     }
-  }
-});
-
-/***/ }),
-
-/***/ "./resources/js/mywords.js":
-/*!*********************************!*\
-  !*** ./resources/js/mywords.js ***!
-  \*********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "Word List",
-  list: ["Cat", "foo", "bad"],
-  current: "",
-  count: 0,
-  add: function add() {
-    this.list.push(this.current);
-  },
-  remove: function remove(item) {
-    this.list.splice(this.list.indexOf(item), 1);
+    this.currentRowIndex++;
   }
 });
 
@@ -210,29 +181,69 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ Tile)
 /* harmony export */ });
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 var Tile = /*#__PURE__*/function () {
-  function Tile() {
+  // Letter the user pressed
+  // Correct, present, absent
+
+  function Tile(position) {
     _classCallCheck(this, Tile);
     _defineProperty(this, "letter", "");
     _defineProperty(this, "status", "");
+    this.position = position;
   }
   _createClass(Tile, [{
+    key: "updateStatus",
+    value: function updateStatus(word) {
+      if (!word.includes(this.letter)) {
+        return this.status = "absent";
+      }
+      if (this.letter == word[this.position]) {
+        return this.status = "correct";
+      }
+      this.status = "present";
+    }
+  }, {
     key: "fill",
-    value:
-    // Correct, present, absent
-
-    function fill(key) {
-      this.letter = key.toLowerCase(); // Set the input letter to lowecase.
+    value: function fill(key) {
+      this.letter = key.toUpperCase(); // Set the input letter to toUpperCase.
       //We can do this also with css text-transform: lowercase;
     }
   }, {
     key: "empty",
     value: function empty() {
       this.letter = "";
+    }
+  }], [{
+    key: "updateStatusesForRow",
+    value: function updateStatusesForRow(row, word) {
+      var _iterator = _createForOfIteratorHelper(row),
+        _step;
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var tile = _step.value;
+          tile.updateStatus(word);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      row.filter(function (tile) {
+        return tile.status == "present";
+      }).fliter(function (tile) {
+        return row.some(function (t) {
+          return t.letter == tile.letter && t.status == "correct";
+        });
+      }).forEach(function (tile) {
+        return tile.status = "absent";
+      });
     }
   }]);
   return Tile;

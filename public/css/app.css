@@ -32,6 +32,8 @@ body {
 
 .row {
     display: flex;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
 }
 
 .row.current .tile:empty:first-of-type {
@@ -78,10 +80,23 @@ body {
     text-shadow: 0 0 12px rgba(38, 246, 110, 0.42);
 }
 
+.key.present {
+    background: #f7f749;
+}
+
+.key.correct {
+    background: #47d747;
+}
+
+.key.absent {
+    background: #888;
+}
+
+
 .row.invalid .tile,
 .tile.invalid {
     color: #ff3f3f;
-    text-shadow: 0 0 12px rgba(38, 246, 110, 0.42);
+    text-shadow: 0 0 12px rgba(255, 0, 34, 0.42);
 }
 
 img {
@@ -89,5 +104,19 @@ img {
     padding: 20px 0px;
     margin: 0 auto;
     display: block;
+}
+
+#keyboard {
+    margin-top: 2rem
+}
+
+.key {
+    font-family: 'Poppins', sans-serif !important;
+    background: #c5c5c5;
+    border: 0;
+    border-radius: 4px;
+    height: 50px;
+    min-width: 40px;
+    margin: 5px;
 }
 
